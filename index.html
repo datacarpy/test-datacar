@@ -1,118 +1,499 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Test Datacar</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Test Datacar | Auto ideal</title>
+  <style>
+    :root{
+      --bg:#0b0f17; --card:#111827; --muted:#9CA3AF; --text:#E5E7EB;
+      --accent:#22c55e; --accent2:#60a5fa; --btn:#1f2937; --btnHover:#374151;
+    }
+    body{
+      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background: radial-gradient(1200px 800px at 20% 10%, #111827 0%, var(--bg) 55%);
+      color: var(--text);
+      display:flex; align-items:center; justify-content:center;
+      padding:24px;
+    }
+    .wrap{ width: min(820px, 100%); }
+    .card{
+      background: linear-gradient(180deg, #0f172a 0%, var(--card) 100%);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:16px;
+      box-shadow: 0 18px 50px rgba(0,0,0,.35);
+      padding:24px;
+    }
+    h1{ margin:0; font-size:22px; letter-spacing:.2px; }
+    .sub{ margin:10px 0 0; color: var(--muted); font-size:14px; line-height:1.5; }
+    .divider{ margin:18px 0; border-top:1px solid rgba(255,255,255,.08); }
+    .grid{ display:grid; gap:12px; grid-template-columns: 1fr; }
+    @media(min-width:640px){ .grid{ grid-template-columns: 1fr 1fr; } }
 
-<style>
-body {
-    font-family: Arial, sans-serif;
-    background: #f5f5f5;
-    text-align: center;
-    padding: 40px;
-}
+    label{ display:block; font-size:13px; color:#d1d5db; margin:10px 0 6px; }
+    input{
+      width:100%; padding:12px 12px; border-radius:12px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04); color: var(--text);
+      outline:none;
+    }
+    input:focus{ border-color: rgba(96,165,250,.7); }
 
-.container {
-    background: white;
-    padding: 30px;
-    max-width: 600px;
-    margin: auto;
-    border-radius: 10px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-}
+    .btn{
+      border:none; cursor:pointer;
+      padding:12px 14px; border-radius:12px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      color:#07121f; font-weight:800;
+      width:100%;
+      margin-top:14px;
+    }
+    .btn.secondary{
+      background: transparent; color: var(--text);
+      border:1px solid rgba(255,255,255,.12);
+      font-weight:600;
+      width:auto;
+    }
+    .btn.secondary:hover{ background: rgba(255,255,255,.05); }
+    .small{ font-size:12px; color: var(--muted); margin-top:10px; }
 
-button {
-    display: block;
-    width: 100%;
-    padding: 12px;
-    margin: 10px 0;
-    border: none;
-    border-radius: 6px;
-    background: #111;
-    color: white;
-    cursor: pointer;
-    font-size: 15px;
-}
+    .progress{
+      width:100%;
+      background: rgba(255,255,255,.08);
+      border-radius:999px; overflow:hidden;
+      height:10px; margin-top:8px;
+    }
+    .bar{ height:100%; width:0%; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width .25s; }
 
-button:hover {
-    background: #333;
-}
+    .qTitle{ font-size:18px; margin:0 0 10px; line-height:1.25; }
+    .answers{ display:grid; gap:10px; }
+    button.opt{
+      width:100%; text-align:left;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+      padding:12px 14px;
+      border-radius:12px;
+      cursor:pointer;
+      font-size:15px;
+    }
+    button.opt:hover{ background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.18); }
 
-#result {
-    margin-top: 30px;
-}
-</style>
+    .nav{ display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; }
+
+    .box{
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+      border-radius:14px;
+      padding:14px;
+    }
+    ul{ margin:0; padding-left:18px; color:#e5e7eb; }
+    li{ margin:6px 0; }
+    .badge{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:6px 12px; border-radius:999px;
+      background: rgba(34,197,94,.12);
+      border:1px solid rgba(34,197,94,.25);
+      color: #bbf7d0;
+      font-size:13px;
+      margin-bottom:10px;
+    }
+    a.ctaLink{
+      text-decoration:none;
+      display:inline-block;
+      padding:12px 14px;
+      border-radius:12px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      color:#07121f;
+      font-weight:900;
+    }
+    .err{ color:#fecaca; font-size:13px; margin-top:10px; }
+  </style>
 </head>
 
 <body>
+<div class="wrap">
+  <div class="card">
 
-<div class="container">
-<h2>Descubrí tu Perfil Automotor</h2>
+    <!-- Pantalla Bienvenida / Lead -->
+    <div id="leadScreen">
+      <h1>Descubrí el auto ideal para vos (en 2 minutos)</h1>
+      <p class="sub">
+        No existe “el mejor auto”. Existe <b>el mejor auto para tu estilo de vida</b>.
+        Respondé 10 preguntas y te mostramos tu perfil + modelos recomendados en Paraguay.
+      </p>
+      <div class="divider"></div>
 
-<div id="quiz">
-    <p><b>1. ¿Qué es lo más importante para vos?</b></p>
-    <button onclick="answer('A')">Precio y consumo</button>
-    <button onclick="answer('B')">Practicidad urbana</button>
-    <button onclick="answer('C')">Calidad y reventa</button>
-    <button onclick="answer('D')">Espacio y seguridad</button>
-    <button onclick="answer('E')">Potencia y fuerza</button>
-</div>
+      <div class="box">
+        <b>Antes de empezar</b>
+        <p class="sub" style="margin-top:8px;">
+          Te enviamos tu resultado y recomendaciones por WhatsApp / email.
+        </p>
 
-<div id="result"></div>
+        <div class="grid">
+          <div>
+            <label>Nombre *</label>
+            <input id="nombre" placeholder="Ej: Juan Pérez" required />
+          </div>
+          <div>
+            <label>Celular (WhatsApp) *</label>
+            <input id="celular" placeholder="Ej: +595 9xx xxx xxx" required />
+          </div>
+        </div>
+
+        <label>Email *</label>
+        <input id="email" placeholder="Ej: juan@email.com" type="email" required />
+
+        <button class="btn" onclick="startQuiz()">Empezar el test →</button>
+        <div id="leadError" class="err" style="display:none;"></div>
+
+        <div class="small">
+          *No enviamos spam. Solo el resultado y opciones recomendadas.
+        </div>
+      </div>
+    </div>
+
+    <!-- Pantalla Test -->
+    <div id="quizScreen" style="display:none;">
+      <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+        <div>
+          <h1>Test Datacar</h1>
+          <div class="sub" id="stepPill">Pregunta 1/10</div>
+        </div>
+        <div style="min-width:240px; flex:1; max-width:320px;">
+          <div class="sub" style="margin:0;">Progreso</div>
+          <div class="progress"><div class="bar" id="bar"></div></div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <div id="quiz"></div>
+
+      <div class="nav">
+        <button class="btn secondary" onclick="prev()" id="prevBtn" disabled>← Atrás</button>
+        <button class="btn secondary" onclick="resetQuiz()">Reiniciar</button>
+      </div>
+    </div>
+
+    <!-- Resultado -->
+    <div id="resultScreen" style="display:none;"></div>
+
+  </div>
+
+  <div class="small" style="margin-top:10px;">
+    *Resultados orientativos. Datacar puede afinar según presupuesto, ciudad y disponibilidad.
+  </div>
 </div>
 
 <script>
+  // ✅ Tu WebApp URL (Apps Script)
+  const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbz1g771LjvvcnzEl4ZFjKj77hoVn9bx77lINr0DYNgDxt8Xd5_aJn4lYMmLGH_1ec1O/exec";
 
-let scores = {A:0,B:0,C:0,D:0,E:0};
-let question = 1;
+  let lead = {nombre:"", email:"", celular:"", fuente:"github"};
+  const answersChosen = [];
 
-function answer(type){
-    scores[type]++;
+  const questions = [
+    { t:"1) ¿Qué es lo MÁS importante para vos al comprar un auto?",
+      a:[
+        {txt:"Que sea económico y rinda mucho (consumo)", pts:{A:3}},
+        {txt:"Que sea práctico para el día a día en ciudad", pts:{B:3}},
+        {txt:"Que conserve valor (calidad/precio)", pts:{C:3}},
+        {txt:"Seguridad y comodidad para la familia", pts:{D:3}},
+        {txt:"Fuerza, robustez y versatilidad", pts:{E:3}},
+      ]},
+    { t:"2) ¿Para qué lo vas a usar principalmente?",
+      a:[
+        {txt:"Ciudad diaria (tráfico, estacionar fácil)", pts:{B:2}},
+        {txt:"Optimizar gastos / movilidad simple", pts:{A:2}},
+        {txt:"Ciudad + ruta equilibrado", pts:{C:2}},
+        {txt:"Viajes familiares / niños / valijas", pts:{D:2}},
+        {txt:"Trabajo pesado / carga / campo", pts:{E:3}},
+      ]},
+    { t:"3) ¿En qué rango pensás invertir?",
+      a:[
+        {txt:"Menos de USD 15.000", pts:{A:3}},
+        {txt:"USD 15.000 – 25.000", pts:{B:2, C:2}},
+        {txt:"Más de USD 25.000", pts:{D:3, E:3}},
+      ]},
+    { t:"4) ¿Qué investigás primero cuando buscás un auto?",
+      a:[
+        {txt:"Consumo / rendimiento", pts:{A:2}},
+        {txt:"Equipamiento interior / conectividad", pts:{B:2}},
+        {txt:"Reventa / valor futuro", pts:{C:2}},
+        {txt:"Seguridad (airbags, asistencias)", pts:{D:2}},
+        {txt:"Potencia / motor / capacidad", pts:{E:2}},
+      ]},
+    { t:"5) ¿Qué frase te representa más?",
+      a:[
+        {txt:"“Quiero pagar lo justo.”", pts:{A:3}},
+        {txt:"“Quiero algo moderno y ágil.”", pts:{B:3}},
+        {txt:"“Quiero buena inversión y reventa.”", pts:{C:3}},
+        {txt:"“Quiero seguridad y espacio.”", pts:{D:3}},
+        {txt:"“Quiero potencia y presencia.”", pts:{E:3}},
+      ]},
+    { t:"6) ¿Cuántas personas viajan normalmente con vos?",
+      a:[
+        {txt:"1–2 personas", pts:{A:2, B:2}},
+        {txt:"3–4 personas", pts:{C:2}},
+        {txt:"4 o más (familia grande)", pts:{D:3}},
+        {txt:"Depende del trabajo (herramientas/carga)", pts:{E:2}},
+      ]},
+    { t:"7) ¿Qué tan importante es para vos la reventa?",
+      a:[
+        {txt:"Muchísimo (quiero recuperar lo máximo posible)", pts:{C:3}},
+        {txt:"Importa, pero no es lo principal", pts:{D:1}},
+        {txt:"No es prioridad, lo quiero usar fuerte", pts:{E:1}},
+        {txt:"Solo si impacta en el precio final", pts:{A:2}},
+      ]},
+    { t:"8) ¿Preferís nuevo o usado?",
+      a:[
+        {txt:"Usado confiable (precio/beneficio)", pts:{A:3}},
+        {txt:"Nuevo accesible (0km entry-level)", pts:{B:2}},
+        {txt:"Nuevo con buen equipamiento", pts:{C:2}},
+        {txt:"Nuevo familiar (seguridad/espacio)", pts:{D:2}},
+        {txt:"Nuevo robusto (pickup / trabajo)", pts:{E:2}},
+      ]},
+    { t:"9) ¿Qué te da más tranquilidad?",
+      a:[
+        {txt:"Repuestos accesibles y mantenimiento simple", pts:{A:2}},
+        {txt:"Tecnología, conectividad y confort", pts:{B:2}},
+        {txt:"Marca sólida + buena reventa", pts:{C:2}},
+        {txt:"Seguridad avanzada (ADAS / airbags)", pts:{D:2}},
+        {txt:"Resistencia y durabilidad", pts:{E:2}},
+      ]},
+    { t:"10) ¿Cómo querés que se vea tu próximo auto?",
+      a:[
+        {txt:"Simple y funcional", pts:{A:2}},
+        {txt:"Moderno y juvenil", pts:{B:2}},
+        {txt:"Elegante y equilibrado", pts:{C:2}},
+        {txt:"Imponente y espacioso", pts:{D:2}},
+        {txt:"Fuerte y dominante", pts:{E:2}},
+      ]},
+  ];
 
-    question++;
+  const results = {
+    A:{ title:"EL ESTRATEGA INTELIGENTE",
+      desc:"Elegís con lógica: consumo, precio, mantenimiento y decisión inteligente.",
+      category:"Hatchback eficiente o Sedan compacto",
+      models:[
+        "Toyota Vitz / Toyota Corolla usado (Garden)",
+        "Chevrolet Onix (Chevrolet Tema)",
+        "Kia Picanto / Kia Soluto (Garden)",
+        "Hyundai HB20 (Automotor)",
+        "Suzuki Swift (Chacomer)"
+      ]},
+    B:{ title:"EL URBANO EFICIENTE",
+      desc:"Vivís en movimiento: querés un auto ágil, moderno, práctico y tecnológico.",
+      category:"Hatchback moderno / Sedan compacto",
+      models:[
+        "Chevrolet Onix RS (Chevrolet Tema)",
+        "Kia Rio (Garden)",
+        "Hyundai Accent (Automotor)",
+        "Volkswagen Polo (Diesa)",
+        "Suzuki Baleno (Chacomer)"
+      ]},
+    C:{ title:"EL EQUILIBRADO PREMIUM",
+      desc:"Querés subir un escalón con inteligencia: calidad, imagen, seguridad y reventa.",
+      category:"Sedan mediano / SUV compacta",
+      models:[
+        "Toyota Corolla (Garden)",
+        "Kia Cerato (Garden)",
+        "Hyundai Elantra (Automotor)",
+        "Volkswagen Virtus (Diesa)",
+        "Chevrolet Cavalier (Chevrolet Tema)"
+      ]},
+    D:{ title:"EL LÍDER FAMILIAR",
+      desc:"Priorizás seguridad, espacio y confort para acompañar tu crecimiento.",
+      category:"SUV",
+      models:[
+        "Toyota Corolla Cross (Garden)",
+        "Toyota Rush (Garden)",
+        "Kia Seltos (Garden)",
+        "Hyundai Tucson (Automotor)",
+        "Chevrolet Captiva (Chevrolet Tema)",
+        "Volkswagen T-Cross (Diesa)"
+      ]},
+    E:{ title:"EL DOMINADOR VERSÁTIL",
+      desc:"Necesitás potencia, robustez y versatilidad. Herramienta y presencia.",
+      category:"Camioneta doble cabina / SUV robusta",
+      models:[
+        "Toyota Hilux (Garden)",
+        "Nissan Frontier (representantes locales)",
+        "Chevrolet S10 (Chevrolet Tema)",
+        "Isuzu D-Max (representantes locales)",
+        "Mitsubishi L200 (De La Sobera)",
+        "Volkswagen Amarok (Diesa)"
+      ]},
+  };
 
-    if(question==2){
-        document.getElementById("quiz").innerHTML = `
-        <p><b>2. ¿Para qué lo usarás principalmente?</b></p>
-        <button onclick="answer('B')">Ciudad diaria</button>
-        <button onclick="answer('A')">Optimizar gastos</button>
-        <button onclick="answer('C')">Ciudad y ruta</button>
-        <button onclick="answer('D')">Viajes familiares</button>
-        <button onclick="answer('E')">Trabajo pesado</button>`;
+  let idx = 0;
+
+  function validateLead(){
+    const nombre = document.getElementById("nombre").value.trim();
+    const celular = document.getElementById("celular").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const err = document.getElementById("leadError");
+
+    if(!nombre || !celular || !email){
+      err.style.display="block";
+      err.textContent="Completá nombre, celular y email para ver tu resultado.";
+      return false;
     }
-
-    else if(question==3){
-        document.getElementById("quiz").innerHTML = `
-        <p><b>3. ¿Qué frase te representa?</b></p>
-        <button onclick="answer('A')">Quiero pagar lo justo</button>
-        <button onclick="answer('B')">Quiero algo moderno</button>
-        <button onclick="answer('C')">Quiero buena reventa</button>
-        <button onclick="answer('D')">Quiero seguridad</button>
-        <button onclick="answer('E')">Quiero potencia</button>`;
+    if(!email.includes("@")){
+      err.style.display="block";
+      err.textContent="Ingresá un email válido.";
+      return false;
     }
+    err.style.display="none";
 
-    else {
-        showResult();
+    lead.nombre = nombre;
+    lead.celular = celular;
+    lead.email = email;
+    return true;
+  }
+
+  async function sendToSheet(payload){
+    try{
+      await fetch(WEBAPP_URL, {
+        method:"POST",
+        mode:"no-cors",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify(payload)
+      });
+    }catch(e){
+      console.log("Error enviando a sheet:", e);
     }
-}
+  }
 
-function showResult(){
+  async function startQuiz(){
+    if(!validateLead()) return;
 
-    let winner = Object.keys(scores).reduce((a,b)=>scores[a]>scores[b]?a:b);
+    await sendToSheet({
+      ...lead,
+      evento:"inicio_test",
+      perfil:"",
+      puntajes:"",
+      respuestas:""
+    });
 
-    let profiles = {
-        A: "<h3>EL ESTRATEGA INTELIGENTE</h3><p>Tu perfil prioriza eficiencia y ahorro.</p><p>Modelos ideales: Toyota Vitz, Chevrolet Onix, Kia Picanto.</p>",
-        B: "<h3>EL URBANO EFICIENTE</h3><p>Practicidad y tecnología para tu día a día.</p><p>Modelos ideales: VW Polo, Hyundai Accent, Kia Rio.</p>",
-        C: "<h3>EL EQUILIBRADO PREMIUM</h3><p>Buscás calidad y buena inversión.</p><p>Modelos ideales: Toyota Corolla, Kia Cerato, VW Virtus.</p>",
-        D: "<h3>EL LÍDER FAMILIAR</h3><p>Espacio, seguridad y confort.</p><p>Modelos ideales: Corolla Cross, Kia Seltos, Hyundai Tucson.</p>",
-        E: "<h3>EL DOMINADOR VERSÁTIL</h3><p>Potencia y robustez.</p><p>Modelos ideales: Toyota Hilux, Nissan Frontier, Chevrolet S10.</p>"
-    };
+    document.getElementById("leadScreen").style.display="none";
+    document.getElementById("quizScreen").style.display="block";
 
-    document.getElementById("quiz").style.display="none";
-    document.getElementById("result").innerHTML = profiles[winner];
-}
+    // init answers
+    while(answersChosen.length < questions.length) answersChosen.push(null);
 
+    render();
+  }
+
+  function calcScores(){
+    const s = {A:0,B:0,C:0,D:0,E:0};
+    for(let i=0;i<answersChosen.length;i++){
+      const chosen = answersChosen[i];
+      if(chosen==null) continue;
+      const pts = questions[i].a[chosen].pts;
+      Object.keys(pts).forEach(k => s[k]+=pts[k]);
+    }
+    return s;
+  }
+
+  function winnerFromScores(s){
+    const order = ["D","E","C","B","A"];
+    const max = Math.max(...Object.values(s));
+    const tops = Object.keys(s).filter(k => s[k]===max);
+    if(tops.length===1) return tops[0];
+    for(const k of order){ if(tops.includes(k)) return k; }
+    return tops[0];
+  }
+
+  function render(){
+    const total = questions.length;
+    document.getElementById("stepPill").textContent = `Pregunta ${idx+1}/${total}`;
+    document.getElementById("bar").style.width = `${(idx/total)*100}%`;
+    document.getElementById("prevBtn").disabled = idx===0;
+
+    const q = questions[idx];
+    const quiz = document.getElementById("quiz");
+
+    quiz.innerHTML = `
+      <h2 class="qTitle">${q.t}</h2>
+      <div class="answers">
+        ${q.a.map((opt,i)=>`
+          <button class="opt" onclick="pick(${i})">${opt.txt}</button>
+        `).join("")}
+      </div>
+      <p class="sub">Elegí una opción para continuar.</p>
+    `;
+  }
+
+  async function pick(i){
+    answersChosen[idx]=i;
+
+    if(idx === questions.length - 1){
+      const s = calcScores();
+      const win = winnerFromScores(s);
+      await finish(s, win);
+      return;
+    }
+    idx++;
+    render();
+  }
+
+  function prev(){
+    if(idx>0) idx--;
+    render();
+  }
+
+  function resetQuiz(){
+    for(let i=0;i<answersChosen.length;i++) answersChosen[i]=null;
+    idx=0;
+    render();
+  }
+
+  async function finish(scores, win){
+    const res = results[win];
+    const respuestasTexto = answersChosen.map((ans,qi)=>{
+      const opt = questions[qi].a[ans]?.txt || "";
+      return `${qi+1}:${opt}`;
+    }).join(" | ");
+
+    await sendToSheet({
+      ...lead,
+      evento:"fin_test",
+      perfil: res.title,
+      puntajes: `A:${scores.A},B:${scores.B},C:${scores.C},D:${scores.D},E:${scores.E}`,
+      respuestas: respuestasTexto
+    });
+
+    document.getElementById("quizScreen").style.display="none";
+    const r = document.getElementById("resultScreen");
+    r.style.display="block";
+    r.innerHTML = `
+      <div class="badge">✅ Perfil detectado</div>
+      <h1 style="margin:0;">${res.title}</h1>
+      <p class="sub">${res.desc}</p>
+
+      <div class="divider"></div>
+
+      <div class="box">
+        <b>Tu categoría ideal:</b>
+        <div class="sub" style="margin-top:6px;">${res.category}</div>
+      </div>
+
+      <div class="box" style="margin-top:12px;">
+        <b>Modelos que van con tu personalidad:</b>
+        <ul style="margin-top:10px;">${res.models.map(m=>`<li>${m}</li>`).join("")}</ul>
+      </div>
+
+      <div class="divider"></div>
+
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <a class="ctaLink" href="#" onclick="alert('Acá ponés tu link de WhatsApp/agenda'); return false;">Quiero mi diagnóstico Datacar</a>
+        <button class="btn secondary" onclick="location.reload()">Hacer el test de nuevo</button>
+      </div>
+
+      <div class="small">Tip: Datacar te recomienda 3 opciones reales según tu presupuesto y ciudad.</div>
+    `;
+  }
 </script>
-
 </body>
 </html>
+
