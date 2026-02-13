@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Test Datacar</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+    text-align: center;
+    padding: 40px;
+}
+
+.container {
+    background: white;
+    padding: 30px;
+    max-width: 600px;
+    margin: auto;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+button {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 6px;
+    background: #111;
+    color: white;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+button:hover {
+    background: #333;
+}
+
+#result {
+    margin-top: 30px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h2>Descubrí tu Perfil Automotor</h2>
+
+<div id="quiz">
+    <p><b>1. ¿Qué es lo más importante para vos?</b></p>
+    <button onclick="answer('A')">Precio y consumo</button>
+    <button onclick="answer('B')">Practicidad urbana</button>
+    <button onclick="answer('C')">Calidad y reventa</button>
+    <button onclick="answer('D')">Espacio y seguridad</button>
+    <button onclick="answer('E')">Potencia y fuerza</button>
+</div>
+
+<div id="result"></div>
+</div>
+
+<script>
+
+let scores = {A:0,B:0,C:0,D:0,E:0};
+let question = 1;
+
+function answer(type){
+    scores[type]++;
+
+    question++;
+
+    if(question==2){
+        document.getElementById("quiz").innerHTML = `
+        <p><b>2. ¿Para qué lo usarás principalmente?</b></p>
+        <button onclick="answer('B')">Ciudad diaria</button>
+        <button onclick="answer('A')">Optimizar gastos</button>
+        <button onclick="answer('C')">Ciudad y ruta</button>
+        <button onclick="answer('D')">Viajes familiares</button>
+        <button onclick="answer('E')">Trabajo pesado</button>`;
+    }
+
+    else if(question==3){
+        document.getElementById("quiz").innerHTML = `
+        <p><b>3. ¿Qué frase te representa?</b></p>
+        <button onclick="answer('A')">Quiero pagar lo justo</button>
+        <button onclick="answer('B')">Quiero algo moderno</button>
+        <button onclick="answer('C')">Quiero buena reventa</button>
+        <button onclick="answer('D')">Quiero seguridad</button>
+        <button onclick="answer('E')">Quiero potencia</button>`;
+    }
+
+    else {
+        showResult();
+    }
+}
+
+function showResult(){
+
+    let winner = Object.keys(scores).reduce((a,b)=>scores[a]>scores[b]?a:b);
+
+    let profiles = {
+        A: "<h3>EL ESTRATEGA INTELIGENTE</h3><p>Tu perfil prioriza eficiencia y ahorro.</p><p>Modelos ideales: Toyota Vitz, Chevrolet Onix, Kia Picanto.</p>",
+        B: "<h3>EL URBANO EFICIENTE</h3><p>Practicidad y tecnología para tu día a día.</p><p>Modelos ideales: VW Polo, Hyundai Accent, Kia Rio.</p>",
+        C: "<h3>EL EQUILIBRADO PREMIUM</h3><p>Buscás calidad y buena inversión.</p><p>Modelos ideales: Toyota Corolla, Kia Cerato, VW Virtus.</p>",
+        D: "<h3>EL LÍDER FAMILIAR</h3><p>Espacio, seguridad y confort.</p><p>Modelos ideales: Corolla Cross, Kia Seltos, Hyundai Tucson.</p>",
+        E: "<h3>EL DOMINADOR VERSÁTIL</h3><p>Potencia y robustez.</p><p>Modelos ideales: Toyota Hilux, Nissan Frontier, Chevrolet S10.</p>"
+    };
+
+    document.getElementById("quiz").style.display="none";
+    document.getElementById("result").innerHTML = profiles[winner];
+}
+
+</script>
+
+</body>
+</html>
