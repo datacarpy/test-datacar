@@ -7,7 +7,7 @@
   <style>
     :root{
       --bg:#0b0f17; --card:#111827; --muted:#9CA3AF; --text:#E5E7EB;
-      --accent:#22c55e; --accent2:#60a5fa; --btn:#1f2937; --btnHover:#374151;
+      --accent:#22c55e; --accent2:#60a5fa;
     }
     body{
       margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
@@ -16,7 +16,7 @@
       display:flex; align-items:center; justify-content:center;
       padding:24px;
     }
-    .wrap{ width: min(820px, 100%); }
+    .wrap{ width: min(900px, 100%); }
     .card{
       background: linear-gradient(180deg, #0f172a 0%, var(--card) 100%);
       border:1px solid rgba(255,255,255,.08);
@@ -118,15 +118,18 @@
     <div id="leadScreen">
       <h1>Descubrí el auto ideal para vos (en 2 minutos)</h1>
       <p class="sub">
-        No existe “el mejor auto”. Existe <b>el mejor auto para tu estilo de vida</b>.
-        Respondé 10 preguntas y te mostramos tu perfil + modelos recomendados en Paraguay.
+        🚗 <b>La mayoría elige mal</b> por impulso o por “lo que recomienda el amigo”.
+        Este test encuentra tu perfil y te sugiere modelos en Paraguay.
+        <br><br>
+        ✨ Al final te damos: <b>tu perfil</b> + <b>categoría ideal</b> + <b>modelos recomendados</b>.
       </p>
+
       <div class="divider"></div>
 
       <div class="box">
         <b>Antes de empezar</b>
         <p class="sub" style="margin-top:8px;">
-          Te enviamos tu resultado y recomendaciones por WhatsApp / email.
+          Dejanos tus datos para enviarte tu resultado y ayudarte a elegir 3 opciones reales.
         </p>
 
         <div class="grid">
@@ -147,7 +150,7 @@
         <div id="leadError" class="err" style="display:none;"></div>
 
         <div class="small">
-          *No enviamos spam. Solo el resultado y opciones recomendadas.
+          *Sin spam. Solo tu resultado y opciones recomendadas.
         </div>
       </div>
     </div>
@@ -185,11 +188,15 @@
 </div>
 
 <script>
-  // ✅ Tu WebApp URL (Apps Script)
-  const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbz1g771LjvvcnzEl4ZFjKj77hoVn9bx77lINr0DYNgDxt8Xd5_aJn4lYMmLGH_1ec1O/exec";
+  // ✅ Web App /exec (CORRECTA)
+  const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbw-ttQILWbRaIYac6oxR4w7IGMwL_sPICpts0Pod7RFEr7kf3-6iDuakckU_hQmTxhi/exec";
+
+  // ✅ WhatsApp real
+  const WHATSAPP_NUMBER = "595994889020";
 
   let lead = {nombre:"", email:"", celular:"", fuente:"github"};
-  const answersChosen = [];
+  const answersChosen = new Array(10).fill(null);
+  let idx = 0;
 
   const questions = [
     { t:"1) ¿Qué es lo MÁS importante para vos al comprar un auto?",
@@ -325,8 +332,6 @@
       ]},
   };
 
-  let idx = 0;
-
   function validateLead(){
     const nombre = document.getElementById("nombre").value.trim();
     const celular = document.getElementById("celular").value.trim();
@@ -335,7 +340,7 @@
 
     if(!nombre || !celular || !email){
       err.style.display="block";
-      err.textContent="Completá nombre, celular y email para ver tu resultado.";
+      err.textContent="Completá nombre, celular y email para continuar.";
       return false;
     }
     if(!email.includes("@")){
@@ -377,10 +382,7 @@
 
     document.getElementById("leadScreen").style.display="none";
     document.getElementById("quizScreen").style.display="block";
-
-    // init answers
-    while(answersChosen.length < questions.length) answersChosen.push(null);
-
+    idx = 0;
     render();
   }
 
@@ -448,6 +450,13 @@
     render();
   }
 
+  function buildWhatsappLink(){
+    const msg = encodeURIComponent(
+      `Hola Datacar, hice el test y quiero mi diagnóstico personalizado.\n\nNombre: ${lead.nombre}\nWhatsApp: ${lead.celular}\nEmail: ${lead.email}`
+    );
+    return `https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`;
+  }
+
   async function finish(scores, win){
     const res = results[win];
     const respuestasTexto = answersChosen.map((ans,qi)=>{
@@ -466,6 +475,9 @@
     document.getElementById("quizScreen").style.display="none";
     const r = document.getElementById("resultScreen");
     r.style.display="block";
+
+    const wa = buildWhatsappLink();
+
     r.innerHTML = `
       <div class="badge">✅ Perfil detectado</div>
       <h1 style="margin:0;">${res.title}</h1>
@@ -486,7 +498,7 @@
       <div class="divider"></div>
 
       <div style="display:flex; gap:10px; flex-wrap:wrap;">
-        <a class="ctaLink" href="#" onclick="alert('Acá ponés tu link de WhatsApp/agenda'); return false;">Quiero mi diagnóstico Datacar</a>
+        <a class="ctaLink" href="${wa}" target="_blank" rel="noopener">Quiero mi diagnóstico Datacar</a>
         <button class="btn secondary" onclick="location.reload()">Hacer el test de nuevo</button>
       </div>
 
@@ -496,4 +508,5 @@
 </script>
 </body>
 </html>
+
 
